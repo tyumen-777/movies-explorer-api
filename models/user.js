@@ -5,13 +5,18 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
+    required: [true, 'Обязательное поле'],
+    minlength: [2, 'Минимальная длина 2 символа'],
+    maxlength: [30, 'Максимальная длина 30 символов'],
+  },
+  password: {
+    type: String,
+    required: [true, 'Обязательное поле'],
+    select: false,
   },
   email: {
     type: String,
-    required: true,
+    required: [true, 'Обязательное поле'],
     unique: true,
     validate: {
       validator(v) {

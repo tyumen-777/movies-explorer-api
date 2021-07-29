@@ -4,18 +4,11 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request');
 const UnauthorizedError = require('../errors/unauthorized');
-const ForbiddenError = require('../errors/forbidden');
 const ConflictError = require('../errors/conflict-error');
 const { JWT_SECRET } = require('../config');
-const isAuthorized = require('../helpers/isAuthorized');
 
 const getMe = (req, res, next) => {
-  const token = req.headers.authorization;
-
-  if (!isAuthorized(token)) {
-    throw new ForbiddenError('Доступ запрещен');
-  }
-  return User.findById(req.user._id)
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Нет пользователя с таким id');
@@ -62,7 +55,7 @@ const createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, password: hash, email,
     }))
-    .then((user) => res.status(200).send({ mail: user.email }))
+    .then((user) => res.status(200).send({ email: user.email }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         throw new BadRequestError('Данные не прошли валидацию');
