@@ -1,26 +1,27 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const { REQUIRED_INPUT, IS_LINK } = require('../utils/constants');
 
 const movieSchema = new mongoose.Schema({
   country: {
     type: String,
-    required: [true, 'Обязательное поле'],
+    required: [true, REQUIRED_INPUT],
   },
   director: {
     type: String,
-    required: [true, 'Обязательное поле'],
+    required: [true, REQUIRED_INPUT],
   },
   duration: {
     type: Number,
-    required: [true, 'Обязательное поле'],
+    required: [true, REQUIRED_INPUT],
   },
   year: {
     type: Number,
-    required: [true, 'Обязательное поле'],
+    required: [true, REQUIRED_INPUT],
   },
   description: {
     type: String,
-    required: [true, 'Обязательное поле'],
+    required: [true, REQUIRED_INPUT],
   },
   image: {
     type: String,
@@ -29,7 +30,7 @@ const movieSchema = new mongoose.Schema({
       validator(v) {
         return validator.isURL(v);
       },
-      message: 'Формат должен быть ссылкой',
+      message: IS_LINK,
     },
   },
   trailer: {
@@ -39,7 +40,7 @@ const movieSchema = new mongoose.Schema({
       validator(v) {
         return validator.isURL(v);
       },
-      message: 'Формат должен быть ссылкой',
+      message: IS_LINK,
     },
   },
   thumbnail: {
@@ -49,27 +50,27 @@ const movieSchema = new mongoose.Schema({
       validator(v) {
         return validator.isURL(v);
       },
-      message: 'Формат должен быть ссылкой',
+      message: IS_LINK,
     },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: [true, 'Обязательное поле'],
+    required: [true, REQUIRED_INPUT],
   },
   movieId: {
     type: Number,
     ref: 'movie',
-    required: [true, 'Обязательное поле'],
+    required: [true, REQUIRED_INPUT],
     unique: true,
   },
   nameRU: {
     type: String,
-    required: [true, 'Обязательное поле'],
+    required: [true, REQUIRED_INPUT],
   },
   nameEN: {
     type: String,
-    required: [true, 'Обязательное поле'],
+    required: [true, REQUIRED_INPUT],
   },
 });
 

@@ -3,9 +3,9 @@ const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const clientErrorHandler = require('./middlewares/clientErrorHandler');
 const router = require('./routes/index');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
 const limiter = require('./middlewares/limiter');
 
 const { PORT = 3000, DB_ADDRESS = 'mongodb://localhost:27017/movies-explorer' } = process.env;
@@ -31,10 +31,10 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(helmet());
 app.use(requestLogger);
-app.use(errorLogger);
-app.use(errors());
 app.use(limiter);
 app.use(router);
+app.use(errors());
+app.use(errorLogger);
 app.use(clientErrorHandler);
 
 app.listen(PORT);

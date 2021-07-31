@@ -6,12 +6,15 @@ const BadRequestError = require('../errors/bad-request');
 const UnauthorizedError = require('../errors/unauthorized');
 const ConflictError = require('../errors/conflict-error');
 const { JWT_SECRET } = require('../config');
+const {
+  NOT_FOUND_USER, WRONG_EMAIL_OR_PASSWORD, VALIDATION_ERROR, EXIST_EMAIL,
+} = require('../utils/constants');
 
 const getMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Нет пользователя с таким id');
+        throw new NotFoundError(NOT_FOUND_USER);
       }
       return res.status(200).send({ data: user });
     })
@@ -24,7 +27,7 @@ const updateMe = (req, res, next) => {
   return User.findByIdAndUpdate(owner, { name, email }, { new: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Нет пользователя с таким id');
+        throw new NotFoundError(NOT_FOUND_USER);
       }
       res.send(user);
     })
@@ -41,7 +44,7 @@ const login = (req, res, next) => {
       return res.send({ token });
     })
     .catch(() => {
-      throw new UnauthorizedError('Неправильная почта или пароль');
+      throw new UnauthorizedError(WRONG_EMAIL_OR_PASSWORD);
     })
     .catch(next);
 };
@@ -58,10 +61,10 @@ const createUser = (req, res, next) => {
     .then((user) => res.status(200).send({ email: user.email }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        throw new BadRequestError('Данные не прошли валидацию');
+        throw new BadRequestError(VALIDATION_ERROR);
       }
       if (err.name === 'MongoError' || err.code === '11000') {
-        throw new ConflictError('Такой емейл уже зарегистрирован');
+        throw new ConflictError(EXIST_EMAIL);
       }
     })
     .catch(next);

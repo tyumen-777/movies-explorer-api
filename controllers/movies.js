@@ -1,6 +1,7 @@
 const Movie = require('../models/movie');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request');
+const { VALIDATION_ERROR, NOT_FOUND_MOVIE } = require('../utils/constants');
 
 const createMovie = (req, res, next) => {
   const {
@@ -34,9 +35,10 @@ const createMovie = (req, res, next) => {
   })
     .then((movie) => res.status(200).send({ data: movie }))
     .catch((err) => {
-      if (err.name === 'Validation Error') {
-        throw new BadRequestError('Данные не прошли валидацию');
+      if (err.name === 'ValidationError') {
+        throw new BadRequestError(VALIDATION_ERROR);
       }
+      throw err;
     })
     .catch(next);
 };
@@ -52,17 +54,17 @@ const deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
     .then((movie) => {
       if (!movie || movie.owner.toString() !== req.user._id) {
-        throw new NotFoundError('У пользователя нет фильма с таким id');
+        throw new NotFoundError(NOT_FOUND_MOVIE);
       }
-      Movie.findByIdAndDelete(req.params.movieId)
+      movie.remove()
         .then(() => {
-          res.send({ message: 'Фильм удален' });
+          res.send({ message: 'Этот фильм удалён' });
         })
         .catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Данные не прошли валидацию');
+        throw new BadRequestError(VALIDATION_ERROR);
       }
       throw err;
     })
